@@ -1,8 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Rocket, PartyPopper, Heart, Stars } from 'lucide-react';
+import { Rocket, PartyPopper, Heart, Stars, Pizza, Cat, Cookie, Music } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Define types and interfaces
+type ChonkMood = 'happy' | 'excited' | 'silly' | 'loving' | 'stuffed' | 'dancing' | 'sleepy' | 'derp';
+
+interface ChonkFaces {
+  [K: string]: string;
+}
+
+interface ChonkQuotes {
+  [K: string]: string[];
+}
 
 interface FloatingElementProps {
   emoji: string;
@@ -75,32 +86,35 @@ const Tornado: React.FC = () => {
 };
 
 const ChonkLanding: React.FC = () => {
-  const [chonkMood, setChonkMood] = useState('happy');
+  const [chonkMood, setChonkMood] = useState<ChonkMood>('happy');
   const [rocketFuel, setRocketFuel] = useState(80);
   const [holders, setHolders] = useState(12548);
   const [isPartyMode, setIsPartyMode] = useState(false);
+  const [chonkSize, setChonkSize] = useState(1);
+  const [treatCount, setTreatCount] = useState(0);
+  const [lastClickPos, setLastClickPos] = useState({ x: 0, y: 0 });
+  const [danceMoves, setDanceMoves] = useState(0);
 
-  useEffect(() => {
-    const moods = ['happy', 'excited', 'silly', 'loving'];
-    const interval = setInterval(() => {
-      setChonkMood(moods[Math.floor(Math.random() * moods.length)]);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  const chonkFaces: ChonkFaces = {
+    happy: "( ˵ ◕‿◕ ˵ )",
+    excited: "(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧",
+    silly: "(づ｡◕‿‿◕｡)づ",
+    loving: "(♡°▽°♡)",
+    stuffed: "( ｡◕‿◕｡) ⋆｡°✩",
+    dancing: "〜(◠‿◠〜)",
+    sleepy: "(￣ρ￣)..zzZ",
+    derp: "(◐ω◑ )",
+  };
 
-  const ChonkFace = () => {
-    switch(chonkMood) {
-      case 'happy':
-        return "( ◕‿◕ )";
-      case 'excited':
-        return "(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧";
-      case 'silly':
-        return "(づ｡◕‿‿◕｡)づ";
-      case 'loving':
-        return "(♡°▽°♡)";
-      default:
-        return "( ◕‿◕ )";
-    }
+  const chonkQuotes: ChonkQuotes = {
+    happy: ["When in doubt, zoom out! 🚀", "I'm not fat, I'm cultivating mass! 🌟"],
+    excited: ["TREATS OR WE RIOT! (ノಠ益ಠ)ノ", "I've got 99 problems but snacks ain't one! 🍪"],
+    silly: ["Instructions unclear, ate the instructions 🤷‍♂️", "I'm on a seafood diet. I see food, I eat it! 🍕"],
+    loving: ["You're breathtaking! No, YOU'RE breathtaking! 💖", "Did someone order extra cuteness? 🎀"],
+    stuffed: ["Food coma loading... 99% 😴", "I regret nothing! (except not eating more) 🍔"],
+    dancing: ["Shake shake shake! Shake your chonky! 💃", "Dancing queen, young and... well-fed! 👑"],
+    sleepy: ["5 more minutes... or 5 more snacks 😴", "Dreams are made of cheese... mmm cheese 🧀"],
+    derp: ["Brain.exe has stopped working 🤪", "Who needs brain cells when you have treats? 🍬"]
   };
 
   const floatingElements = [
@@ -111,6 +125,29 @@ const ChonkLanding: React.FC = () => {
     { emoji: "🎈", delay: 4, duration: 9, size: "30px" },
     { emoji: "🎉", delay: 5, duration: 7, size: "26px" },
   ];
+
+  useEffect(() => {
+    const eventInterval = setInterval(() => {
+      const events: ChonkMood[] = ['sleepy', 'excited', 'derp', 'happy'];
+      const randomEvent = events[Math.floor(Math.random() * events.length)];
+      setChonkMood(randomEvent);
+    }, 8000);
+
+    return () => clearInterval(eventInterval);
+  }, []);
+
+  const feedChonk = () => {
+    setChonkSize(prev => Math.min(prev + 0.1, 1.5));
+    setTreatCount(prev => prev + 1);
+    setChonkMood('stuffed');
+    setTimeout(() => setChonkMood('happy'), 2000);
+  };
+
+  const makeChonkDance = () => {
+    setDanceMoves(prev => prev + 1);
+    setChonkMood('dancing');
+    setTimeout(() => setChonkMood('happy'), 3000);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-400 via-pink-300 to-yellow-200 relative overflow-hidden">
@@ -163,7 +200,6 @@ const ChonkLanding: React.FC = () => {
           className="relative max-w-md mx-auto mb-8"
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
         >
           <div className="bg-white rounded-2xl p-4 text-center relative">
             <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 
@@ -174,123 +210,115 @@ const ChonkLanding: React.FC = () => {
               animate={{ opacity: 1 }}
               className="text-xl font-bold text-purple-600"
             >
-              {chonkMood === 'happy' && "Heya friendo! Ready to have some fun? 🎉"}
-              {chonkMood === 'excited' && "WOOHOO! Let's party! 🚀"}
-              {chonkMood === 'silly' && "Did someone say TREATS?! 🍪"}
-              {chonkMood === 'loving' && "You're breathtaking! 💖"}
+              {chonkQuotes[chonkMood][Math.floor(Math.random() * chonkQuotes[chonkMood].length)]}
             </motion.p>
           </div>
         </motion.div>
 
-        {/* Chonk Character */}
+        {/* Interactive Chonk Character */}
         <motion.div 
           className="max-w-xs mx-auto"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          style={{ scale: chonkSize }}
+          whileHover={{ scale: chonkSize * 1.1 }}
+          whileTap={{ scale: chonkSize * 0.95 }}
         >
           <motion.div 
-            className="bg-white rounded-full p-8 shadow-lg text-center"
+            className="bg-white rounded-full p-8 shadow-lg text-center cursor-pointer"
             animate={{ 
               y: [0, -10, 0],
-              rotate: [0, 2, -2, 0]
+              rotate: chonkMood === 'dancing' ? [0, 10, -10, 0] : [0, 2, -2, 0]
             }}
             transition={{ 
-              duration: 4,
+              duration: chonkMood === 'dancing' ? 0.5 : 4,
               repeat: Infinity,
               ease: "easeInOut"
             }}
+            onClick={feedChonk}
           >
             <div className="text-6xl font-mono mb-4">
-              <ChonkFace />
+              {chonkFaces[chonkMood]}
             </div>
             <div className="text-2xl font-bold text-purple-600">
               Cheeky Chonk
             </div>
+            {treatCount > 0 && (
+              <div className="text-sm text-purple-400 mt-2">
+                Treats consumed: {treatCount} 🍪
+              </div>
+            )}
           </motion.div>
-        </motion.div>
-
-        {/* Rocket Fuel Meter */}
-        <motion.div 
-          className="max-w-md mx-auto mt-8 bg-white rounded-full p-4 shadow-lg"
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="text-center mb-2">
-            <span className="text-lg font-bold text-purple-600">Rocket Fuel Loading!</span>
-          </div>
-          <div className="h-6 bg-gray-200 rounded-full overflow-hidden">
-            <motion.div 
-              className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
-              initial={{ width: 0 }}
-              animate={{ width: `${rocketFuel}%` }}
-              transition={{ duration: 1, ease: "easeOut" }}
-            />
-          </div>
-          <div className="text-center mt-2 text-purple-600 font-bold">
-            {rocketFuel}% Ready to Party!
-          </div>
         </motion.div>
 
         {/* Fun Stats */}
-        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mt-8">
-          <motion.div 
-            className="bg-white rounded-xl p-4 text-center shadow-lg"
-            whileHover={{ scale: 1.05 }}
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-8">
+          {[
+            { 
+              icon: <PartyPopper className="w-6 h-6" />,
+              value: holders.toLocaleString(),
+              label: "Frens in the Party! 🎉"
+            },
+            {
+              icon: <Cookie className="w-6 h-6" />,
+              value: `${(treatCount * 420).toLocaleString()}`,
+              label: "Calories Consumed 🍪"
+            },
+            {
+              icon: <Music className="w-6 h-6" />,
+              value: danceMoves,
+              label: "Epic Dance Moves 💃"
+            },
+            {
+              icon: <Cat className="w-6 h-6" />,
+              value: `${Math.floor(chonkSize * 100)}%`,
+              label: "Chonkiness Level 📈"
+            }
+          ].map((stat, index) => (
             <motion.div 
-              className="text-2xl font-bold text-purple-600"
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              key={index}
+              className="bg-white rounded-xl p-4 text-center shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
             >
-              {holders.toLocaleString()}
+              <div className="flex justify-center mb-2">
+                {stat.icon}
+              </div>
+              <motion.div 
+                className="text-2xl font-bold text-purple-600"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
+              >
+                {stat.value}
+              </motion.div>
+              <div className="text-sm text-purple-400">
+                {stat.label}
+              </div>
             </motion.div>
-            <div className="text-sm text-purple-400">
-              Frens in the Party! 🎉
-            </div>
-          </motion.div>
-          <motion.div 
-            className="bg-white rounded-xl p-4 text-center shadow-lg"
-            whileHover={{ scale: 1.05 }}
-            initial={{ x: 50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <motion.div 
-              className="text-2xl font-bold text-purple-600"
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-            >
-              543
-            </motion.div>
-            <div className="text-sm text-purple-400">
-              High Fives Today! 🙌
-            </div>
-          </motion.div>
+          ))}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 max-w-md mx-auto">
+        {/* Interactive Buttons */}
+        <div className="flex flex-wrap gap-4 justify-center mt-8 max-w-md mx-auto">
           <motion.button 
             className="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full 
                      font-bold text-lg shadow-lg flex items-center justify-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={makeChonkDance}
           >
-            <Rocket className="w-6 h-6" />
-            Join the Fun!
+            <Music className="w-6 h-6" />
+            Make Chonk Dance!
           </motion.button>
           <motion.button 
             className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white rounded-full 
                      font-bold text-lg shadow-lg flex items-center justify-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={feedChonk}
           >
-            <PartyPopper className="w-6 h-6" />
-            Get $CHONK
+            <Cookie className="w-6 h-6" />
+            Feed $TREAT
           </motion.button>
         </div>
 
@@ -299,50 +327,65 @@ const ChonkLanding: React.FC = () => {
           className="grid md:grid-cols-3 gap-6 mt-16"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
         >
           {[
-            { emoji: "🎮", title: "Play & Earn", desc: "Join daily mini-games and win $CHONK prizes!" },
-            { emoji: "🎨", title: "Meme Contest", desc: "Create funny memes with Cheeky Chonk!" },
-            { emoji: "🎁", title: "Daily Surprises", desc: "Chonk loves surprising his frens!" }
+            { 
+              emoji: "🎮",
+              title: "Chonk Games",
+              desc: "Play 'Chonk Jump' or 'Cookie Clicker' to earn $TREAT!" 
+            },
+            { 
+              emoji: "🎨",
+              title: "Meme Factory",
+              desc: "Create and share your dankest Chonk memes! Weekly prizes!" 
+            },
+            { 
+              emoji: "🏆",
+              title: "Chonk League",
+              desc: "Compete in daily challenges! Current mission: Get CHONKIER!"
+            }
           ].map((feature, index) => (
             <motion.div
               key={index}
-              className="bg-white rounded-xl p-6 text-center shadow-lg"
-              whileHover={{ scale: 1.05, rotate: [-1, 1, -1, 0] }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="text-4xl mb-4">{feature.emoji}</div>
-              <h3 className="text-xl font-bold text-purple-600 mb-2">{feature.title}</h3>
-              <p className="text-purple-400">{feature.desc}</p>
-            </motion.div>
-          ))}
-        </motion.div>
+                            className="bg-white rounded-xl p-6 text-center shadow-lg"
+                            whileHover={{ scale: 1.05, rotate: [-1, 1, -1, 0] }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <div className="text-4xl mb-4">{feature.emoji}</div>
+                            <h3 className="text-xl font-bold text-purple-600 mb-2">{feature.title}</h3>
+                            <p className="text-purple-400">{feature.desc}</p>
+                          </motion.div>
+                        ))}
+                      </motion.div>
 
-        {/* Footer */}
-        <footer className="text-center py-8 mt-16">
-          <motion.p 
-            className="text-purple-600 font-bold"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            Made with <Heart className="w-4 h-4 inline" /> by Cheeky Chonk & Frens
-          </motion.p>
-        </footer>
-      </div>
+                      {/* Footer */}
+                      <footer className="text-center py-8 mt-16">
+                        <motion.p 
+                          className="text-purple-600 font-bold"
+                          animate={{ scale: [1, 1.05, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          Made with <Heart className="w-4 h-4 inline" /> by Cheeky Chonk & Frens
+                        </motion.p>
+                        <div className="mt-2 text-purple-500 text-sm">
+                          No Chonks were harmed in the making of this website 
+                          (just slightly overfed) 🍪
+                        </div>
+                      </footer>
+                    </div>
 
-      {/* Party Mode Toggle */}
-      <motion.button
-        onClick={() => setIsPartyMode(!isPartyMode)}
-        className="fixed bottom-4 right-4 z-50 px-4 py-2 bg-purple-600 hover:bg-purple-700 
-                 text-white rounded-full shadow-lg"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        {isPartyMode ? "Calm Down" : "Party Time!"}
-      </motion.button>
-    </div>
-  );
-};
+                    {/* Enhanced Party Mode Toggle */}
+                    <motion.button
+                      onClick={() => setIsPartyMode(!isPartyMode)}
+                      className="fixed bottom-4 right-4 z-50 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-500 
+                               text-white rounded-full shadow-lg font-bold"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      {isPartyMode ? "Too Much Party! 🥵" : "PARTY TIME! 🎉"}
+                    </motion.button>
+                  </div>
+                );
+              };
 
-export default ChonkLanding;
+              export default ChonkLanding;
