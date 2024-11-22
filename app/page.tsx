@@ -1,189 +1,348 @@
-// app/page.tsx
-import React from 'react';
-import { MoreVertical, Trash2 } from 'lucide-react';
-import Link from 'next/link';
+"use client";
 
-const CardCorner = () => (
-  <svg 
-    className="absolute top-0 right-0 z-10" 
-    width="24" 
-    height="24" 
-    viewBox="0 0 24 24" 
-    fill="none"
+import React, { useState, useEffect } from 'react';
+import { Rocket, PartyPopper, Heart, Stars } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface FloatingElementProps {
+  emoji: string;
+  delay: number;
+  duration: number;
+  size: string;
+}
+
+const FloatingElement: React.FC<FloatingElementProps> = ({ emoji, delay, duration, size }) => (
+  <motion.div 
+    className="absolute pointer-events-none"
+    initial={{ opacity: 0, y: 0 }}
+    animate={{ 
+      opacity: 0.5,
+      y: [-20, 0, -20],
+      rotate: [0, 5, 0]
+    }}
+    transition={{ 
+      duration: duration,
+      delay: delay,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }}
+    style={{
+      fontSize: size,
+      left: `${Math.random() * 100}vw`,
+      top: `${Math.random() * 100}vh`,
+    }}
   >
-    <path
-      d="M0 0H24V20C24 8.954305 15.045695 0 4 0H0Z"
-      fill="white"
-    />
-  </svg>
+    {emoji}
+  </motion.div>
 );
 
-export default function DashboardPage() {
-  const sections = [
-    {
-      id: 'open',
-      title: 'Open',
-      count: 5,
-      color: 'border-l-[3px] border-l-blue-400',
-      subtext: '(approve to earn)'
-    },
-    {
-      id: 'pending',
-      title: 'Pending',
-      count: 3,
-      color: 'border-l-[3px] border-l-yellow-400'
-    },
-    {
-      id: 'rejected',
-      title: 'Rejected',
-      count: 2,
-      color: 'border-l-[3px] border-l-red-400'
-    },
-    {
-      id: 'accepted',
-      title: 'Accepted',
-      count: 6,
-      color: 'border-l-[3px] border-l-green-400'
-    }
-  ];
+const Tornado: React.FC = () => {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      <motion.div 
+        className="absolute w-40 h-96 left-1/2 bottom-0"
+        animate={{ 
+          rotate: [0, 360],
+          scale: [1, 1.2, 1]
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      >
+        {[...Array(10)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute bottom-0 rounded-full bg-white/10"
+            style={{
+              width: `${100 + i * 20}px`,
+              height: `${100 + i * 20}px`,
+              transform: `translateY(-${i * 40}px)`,
+            }}
+            animate={{ rotate: 360 }}
+            transition={{
+              duration: 4 + i * 0.5,
+              repeat: Infinity,
+              ease: "linear",
+              delay: i * 0.1,
+            }}
+          />
+        ))}
+      </motion.div>
+    </div>
+  );
+};
 
-  const tasks = [
-    {
-      title: 'Task t4t - 13 November 2024',
-      points: 450,
-      duration: '4h',
-      type: 'Task',
-      timestamp: '13:42'
-    },
-    {
-      title: 'Recording - 23 September 2024',
-      points: 1450,
-      duration: '2d',
-      type: 'Passive',
-      timestamp: '3:45:42'
-    },
-    {
-      title: 'Recording - 12 November 2024',
-      points: 1450,
-      duration: '2d',
-      type: 'Passive',
-      timestamp: '3:45:42'
-    },
-    {
-      title: 'Recording - 12 November 2024',
-      points: 1450,
-      duration: '2d',
-      type: 'Passive',
-      timestamp: '3:45:42'
+const ChonkLanding: React.FC = () => {
+  const [chonkMood, setChonkMood] = useState('happy');
+  const [rocketFuel, setRocketFuel] = useState(80);
+  const [holders, setHolders] = useState(12548);
+  const [isPartyMode, setIsPartyMode] = useState(false);
+
+  useEffect(() => {
+    const moods = ['happy', 'excited', 'silly', 'loving'];
+    const interval = setInterval(() => {
+      setChonkMood(moods[Math.floor(Math.random() * moods.length)]);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const ChonkFace = () => {
+    switch(chonkMood) {
+      case 'happy':
+        return "( ◕‿◕ )";
+      case 'excited':
+        return "(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧";
+      case 'silly':
+        return "(づ｡◕‿‿◕｡)づ";
+      case 'loving':
+        return "(♡°▽°♡)";
+      default:
+        return "( ◕‿◕ )";
     }
+  };
+
+  const floatingElements = [
+    { emoji: "🌟", delay: 0, duration: 6, size: "24px" },
+    { emoji: "🚀", delay: 1, duration: 8, size: "32px" },
+    { emoji: "🌈", delay: 2, duration: 7, size: "28px" },
+    { emoji: "✨", delay: 3, duration: 5, size: "20px" },
+    { emoji: "🎈", delay: 4, duration: 9, size: "30px" },
+    { emoji: "🎉", delay: 5, duration: 7, size: "26px" },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-100">
-        <div className="flex items-center justify-between px-8 py-4">
-          <div className="flex items-center space-x-2 text-sm">
-            <Link href="/" className="flex items-center space-x-2 text-gray-600">
-              <span className="w-5 h-5 bg-gray-50 rounded flex items-center justify-center">□</span>
-              <span>My Board</span>
-            </Link>
-            <span className="text-gray-400">›</span>
-            <span className="text-gray-600">My Board</span>
+    <div className="min-h-screen bg-gradient-to-b from-purple-400 via-pink-300 to-yellow-200 relative overflow-hidden">
+      {/* Background Effects */}
+      <Tornado />
+
+      {/* Floating Elements */}
+      <div className="fixed inset-0 pointer-events-none">
+        {floatingElements.map((el, i) => (
+          <FloatingElement key={i} {...el} />
+        ))}
+      </div>
+
+      {/* Party Mode Sparkles */}
+      <AnimatePresence>
+        {isPartyMode && (
+          <div className="fixed inset-0 pointer-events-none">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ scale: 0, rotate: 0, opacity: 0 }}
+                animate={{ 
+                  scale: [0, 1, 0],
+                  rotate: [0, 180, 360],
+                  opacity: [0, 1, 0]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                  ease: "easeInOut"
+                }}
+                style={{
+                  position: 'absolute',
+                  left: `${Math.random() * 100}vw`,
+                  top: `${Math.random() * 100}vh`,
+                }}
+              >
+                ✨
+              </motion.div>
+            ))}
           </div>
-          <button className="p-2 hover:bg-gray-50 rounded-lg">
-            <MoreVertical className="h-5 w-5 text-gray-400" />
-          </button>
-        </div>
-      </header>
+        )}
+      </AnimatePresence>
 
       {/* Main Content */}
-      <main className="px-8 py-6">
-        <h1 className="text-2xl font-semibold mb-6">My Board</h1>
-
-        {/* Tabs */}
-        <div className="bg-gray-100 inline-flex rounded-lg p-1 mb-8">
-          {['My Board', 'Library', 'To Do Only', 'Archive'].map((tab, index) => (
-            <button
-              key={tab}
-              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
-                index === 0 
-                  ? 'bg-white shadow-sm font-medium' 
-                  : 'text-gray-600 hover:bg-white/50'
-              }`}
+      <div className="container mx-auto px-4 pt-8 relative z-10">
+        {/* Chonk's Speech Bubble */}
+        <motion.div 
+          className="relative max-w-md mx-auto mb-8"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="bg-white rounded-2xl p-4 text-center relative">
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 
+                          w-4 h-4 bg-white rotate-45"></div>
+            <motion.p 
+              key={chonkMood}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-xl font-bold text-purple-600"
             >
-              {tab}
-            </button>
-          ))}
-        </div>
+              {chonkMood === 'happy' && "Heya friendo! Ready to have some fun? 🎉"}
+              {chonkMood === 'excited' && "WOOHOO! Let's party! 🚀"}
+              {chonkMood === 'silly' && "Did someone say TREATS?! 🍪"}
+              {chonkMood === 'loving' && "You're breathtaking! 💖"}
+            </motion.p>
+          </div>
+        </motion.div>
 
-        {/* Status Sections */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
-          {sections.map((section) => (
-            <div 
-              key={section.id} 
-              className={`relative bg-white rounded-xl shadow-sm pl-4 ${section.color}`}
-            >
-              <CardCorner />
-              <div className="p-4 flex items-center justify-between">
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium">{section.title}</span>
-                    <span className="text-gray-500">{section.count}</span>
-                  </div>
-                  {section.subtext && (
-                    <div className="text-xs text-gray-500 mt-0.5">{section.subtext}</div>
-                  )}
-                </div>
-                <button className="p-1.5 hover:bg-gray-50 rounded-lg">
-                  <MoreVertical className="h-4 w-4 text-gray-400" />
-                </button>
-              </div>
+        {/* Chonk Character */}
+        <motion.div 
+          className="max-w-xs mx-auto"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <motion.div 
+            className="bg-white rounded-full p-8 shadow-lg text-center"
+            animate={{ 
+              y: [0, -10, 0],
+              rotate: [0, 2, -2, 0]
+            }}
+            transition={{ 
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <div className="text-6xl font-mono mb-4">
+              <ChonkFace />
             </div>
-          ))}
+            <div className="text-2xl font-bold text-purple-600">
+              Cheeky Chonk
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Rocket Fuel Meter */}
+        <motion.div 
+          className="max-w-md mx-auto mt-8 bg-white rounded-full p-4 shadow-lg"
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="text-center mb-2">
+            <span className="text-lg font-bold text-purple-600">Rocket Fuel Loading!</span>
+          </div>
+          <div className="h-6 bg-gray-200 rounded-full overflow-hidden">
+            <motion.div 
+              className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+              initial={{ width: 0 }}
+              animate={{ width: `${rocketFuel}%` }}
+              transition={{ duration: 1, ease: "easeOut" }}
+            />
+          </div>
+          <div className="text-center mt-2 text-purple-600 font-bold">
+            {rocketFuel}% Ready to Party!
+          </div>
+        </motion.div>
+
+        {/* Fun Stats */}
+        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mt-8">
+          <motion.div 
+            className="bg-white rounded-xl p-4 text-center shadow-lg"
+            whileHover={{ scale: 1.05 }}
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <motion.div 
+              className="text-2xl font-bold text-purple-600"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              {holders.toLocaleString()}
+            </motion.div>
+            <div className="text-sm text-purple-400">
+              Frens in the Party! 🎉
+            </div>
+          </motion.div>
+          <motion.div 
+            className="bg-white rounded-xl p-4 text-center shadow-lg"
+            whileHover={{ scale: 1.05 }}
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <motion.div 
+              className="text-2xl font-bold text-purple-600"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            >
+              543
+            </motion.div>
+            <div className="text-sm text-purple-400">
+              High Fives Today! 🙌
+            </div>
+          </motion.div>
         </div>
 
-        {/* Task Grid */}
-        <div className="grid grid-cols-2 gap-6">
-          {tasks.map((task, index) => (
-            <div 
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 max-w-md mx-auto">
+          <motion.button 
+            className="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full 
+                     font-bold text-lg shadow-lg flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Rocket className="w-6 h-6" />
+            Join the Fun!
+          </motion.button>
+          <motion.button 
+            className="px-8 py-4 bg-pink-500 hover:bg-pink-600 text-white rounded-full 
+                     font-bold text-lg shadow-lg flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <PartyPopper className="w-6 h-6" />
+            Get $CHONK
+          </motion.button>
+        </div>
+
+        {/* Fun Features */}
+        <motion.div 
+          className="grid md:grid-cols-3 gap-6 mt-16"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          {[
+            { emoji: "🎮", title: "Play & Earn", desc: "Join daily mini-games and win $CHONK prizes!" },
+            { emoji: "🎨", title: "Meme Contest", desc: "Create funny memes with Cheeky Chonk!" },
+            { emoji: "🎁", title: "Daily Surprises", desc: "Chonk loves surprising his frens!" }
+          ].map((feature, index) => (
+            <motion.div
               key={index}
-              className="group relative bg-white rounded-xl shadow-sm overflow-hidden"
+              className="bg-white rounded-xl p-6 text-center shadow-lg"
+              whileHover={{ scale: 1.05, rotate: [-1, 1, -1, 0] }}
+              transition={{ duration: 0.2 }}
             >
-              <CardCorner />
-              <div className="relative">
-                <img 
-                  src={`/api/placeholder/400/300`} 
-                  alt={task.title}
-                  className="w-full aspect-video object-cover"
-                />
-                <div className="absolute top-3 right-3 flex space-x-2">
-                  <button className="p-1.5 bg-white/90 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white">
-                    <Trash2 className="h-4 w-4 text-gray-600" />
-                  </button>
-                  <button className="p-1.5 bg-white/90 backdrop-blur-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-white">
-                    <MoreVertical className="h-4 w-4 text-gray-600" />
-                  </button>
-                </div>
-                <div className="absolute bottom-3 right-3 text-sm text-white font-medium">
-                  {task.timestamp}
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-sm font-medium">{task.title}</h3>
-                <div className="mt-2 flex items-center space-x-3 text-xs text-gray-500">
-                  <div className="flex items-center space-x-1">
-                    <span>□</span>
-                    <span>{task.points} pts</span>
-                  </div>
-                  <span>{task.duration}</span>
-                  <span className="px-2 py-0.5 bg-gray-100 rounded">{task.type}</span>
-                </div>
-              </div>
-            </div>
+              <div className="text-4xl mb-4">{feature.emoji}</div>
+              <h3 className="text-xl font-bold text-purple-600 mb-2">{feature.title}</h3>
+              <p className="text-purple-400">{feature.desc}</p>
+            </motion.div>
           ))}
-        </div>
-      </main>
+        </motion.div>
+
+        {/* Footer */}
+        <footer className="text-center py-8 mt-16">
+          <motion.p 
+            className="text-purple-600 font-bold"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            Made with <Heart className="w-4 h-4 inline" /> by Cheeky Chonk & Frens
+          </motion.p>
+        </footer>
+      </div>
+
+      {/* Party Mode Toggle */}
+      <motion.button
+        onClick={() => setIsPartyMode(!isPartyMode)}
+        className="fixed bottom-4 right-4 z-50 px-4 py-2 bg-purple-600 hover:bg-purple-700 
+                 text-white rounded-full shadow-lg"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
+        {isPartyMode ? "Calm Down" : "Party Time!"}
+      </motion.button>
     </div>
   );
-}
+};
+
+export default ChonkLanding;

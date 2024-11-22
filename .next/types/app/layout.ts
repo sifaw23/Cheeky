@@ -1,4 +1,4 @@
-// File: /home/runner/SigilStream/app/layout.tsx
+// File: /home/runner/Cheeky-Chonk/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -1,30 +1,27 @@
-// app/layout.tsx
-import { Inter } from 'next/font/google'
-import './globals.css'
-import Sidebar from '@/components/Sidebar'
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
-  title: 'TraceAI Dashboard',
-  description: 'Task management and tracking platform',
-}
+export const metadata: Metadata = {
+  title: 'Cheeky Chonk - Your Friendly Crypto Companion',
+  description: 'Join the most fun and friendly community in crypto with Cheeky Chonk!',
+  icons: {
+    icon: '/favicon.ico',
+  },
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex min-h-screen bg-gray-50">
-          <Sidebar />
-          <main className="flex-1 ml-64 p-8">
-            {children}
-          </main>
-        </div>
+        {children}
       </body>
     </html>
-  )
+  );
 }
